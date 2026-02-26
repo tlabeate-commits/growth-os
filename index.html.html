@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taku's Growth OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0f0f17;--surface:#16161f;--card:#1c1c28;--border:#2a2a3d;--border2:#363650;
+  --sleep:#6366f1;--exercise:#f43f5e;--learn:#8b5cf6;--assign:#f59e0b;
+  --skill:#06b6d4;--break:#34d399;--meal:#fb923c;--free:#a78bfa;
+  --spiritual:#e879f9;--planning:#38bdf8;--water:#60a5fa;--sun:#fde68a;
+  --text:#f1f5f9;--dim:#94a3b8;--muted:#64748b;--gold:#fbbf24;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 600px 400px at 20% 10%,rgba(99,102,241,.07),transparent),radial-gradient(ellipse 500px 400px at 80% 80%,rgba(244,63,94,.05),transparent),radial-gradient(ellipse 400px 300px at 50% 50%,rgba(139,92,246,.04),transparent);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 16px 80px;}
+
+/* HEADER */
+.header{padding:40px 0 28px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.header-left h1{font-size:clamp(28px,5vw,48px);font-weight:800;line-height:1;letter-spacing:-.03em;margin-bottom:6px;}
+.header-left h1 .name{background:linear-gradient(135deg,#818cf8,#e879f9,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header-left .sub{font-size:13px;color:var(--dim);font-weight:300;}
+.week-badge{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;text-align:center;min-width:140px;}
+.week-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.week-val{font-size:15px;font-weight:700;color:var(--gold);}
+
+/* STREAK */
+.streak-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:16px;}
+.streak-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.streak-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.streak-count{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--gold);}
+.streak-days{display:flex;gap:6px;flex-wrap:wrap;}
+.day-dot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.day-circle{width:38px;height:38px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted);transition:all .2s ease;background:var(--surface);}
+.day-dot.completed .day-circle{background:linear-gradient(135deg,var(--gold),#f97316);border-color:var(--gold);color:#000;box-shadow:0 0 12px rgba(251,191,36,.3);}
+.day-dot.today .day-circle{border-color:var(--skill);color:var(--skill);}
+.day-dot.today.completed .day-circle{background:linear-gradient(135deg,var(--gold),#f97316);border-color:var(--gold);color:#000;}
+.day-name{font-size:9px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.streak-reset-note{font-size:10px;color:var(--muted);font-style:italic;margin-top:10px;}
+
+/* WATER TRACKER */
+.water-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 22px;margin-bottom:16px;}
+.water-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.water-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.water-ml{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--water);}
+.water-cups{display:flex;gap:6px;flex-wrap:wrap;}
+.water-cup{
+  width:36px;height:36px;border-radius:8px;
+  border:1.5px solid var(--border2);
+  background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;transition:all .2s;
+  position:relative;
+}
+.water-cup.filled{background:rgba(96,165,250,.15);border-color:var(--water);box-shadow:0 0 8px rgba(96,165,250,.2);}
+.water-cup-label{font-size:8px;font-family:'JetBrains Mono',monospace;color:var(--muted);text-align:center;margin-top:3px;}
+.water-cup-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.water-bar{height:4px;background:var(--border);border-radius:100px;overflow:hidden;margin-top:8px;}
+.water-bar-fill{height:100%;background:linear-gradient(90deg,var(--water),#818cf8);border-radius:100px;transition:width .4s ease;}
+
+/* NLP ROADMAP PHASES */
+.phase-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:16px;}
+.phase-section-title{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.phases-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+@media(max-width:540px){.phases-grid{grid-template-columns:repeat(2,1fr);}}
+.phase-card{border-radius:10px;padding:12px 10px;text-align:center;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.phase-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.ph1::before{background:var(--skill);}
+.ph2::before{background:var(--learn);}
+.ph3::before{background:var(--assign);}
+.ph4::before{background:var(--free);}
+.ph5::before{background:var(--exercise);}
+.ph6::before{background:var(--gold);}
+.phase-num{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.phase-name{font-size:11px;font-weight:700;margin-bottom:3px;}
+.phase-dur{font-size:9px;color:var(--dim);margin-bottom:2px;}
+.phase-focus{font-size:9px;color:var(--muted);line-height:1.4;}
+.phase-check{font-size:15px;margin-top:5px;}
+
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dim);background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px 10px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* DAY SELECTOR */
+.day-selector{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.ds-btn{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.ds-btn:hover{border-color:var(--border2);color:var(--text);}
+.ds-btn.active{background:linear-gradient(135deg,#6366f1,#8b5cf6);border-color:transparent;color:#fff;font-weight:500;}
+
+/* TIMETABLE */
+.timetable{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+.timetable-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.timetable-title{font-size:15px;font-weight:700;}
+.timetable-sub{font-size:11px;color:var(--muted);}
+.done-counter{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--break);}
+.day-progress{height:3px;background:var(--border);}
+.day-progress-fill{height:100%;background:linear-gradient(90deg,var(--break),var(--skill));transition:width .4s ease;width:0%;}
+
+.block{display:flex;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,.04);padding:11px 22px;gap:12px;transition:background .15s;cursor:pointer;}
+.block:hover{background:rgba(255,255,255,.02);}
+.block:last-child{border-bottom:none;}
+.block.checked{background:rgba(52,211,153,.04);}
+.block-check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:all .15s;}
+.block.checked .block-check{background:var(--break);border-color:var(--break);}
+.block.checked .block-check::after{content:'✓';color:#000;font-size:11px;font-weight:700;}
+.block.checked .block-time,.block.checked .block-title{opacity:.4;text-decoration:line-through;}
+.block-color{width:3px;border-radius:100px;align-self:stretch;flex-shrink:0;min-height:20px;}
+.block-content{flex:1;}
+.block-time{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--muted);margin-bottom:2px;}
+.block-title{font-size:13px;font-weight:500;margin-bottom:2px;}
+.block-detail{font-size:11px;color:var(--dim);font-weight:300;line-height:1.5;}
+.block-tag{display:inline-block;font-size:9px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:100px;margin-top:4px;}
+
+/* sub-checks inside a block */
+.sub-checks{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.sub-check{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:5px 10px;cursor:pointer;transition:all .15s;font-size:11px;color:var(--dim);}
+.sub-check:hover{background:rgba(255,255,255,.05);}
+.sub-check.done{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2);color:var(--break);}
+.sub-check.done::before{content:'✓ ';font-weight:700;}
+
+/* NOTES */
+.notes-section{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+.notes-header{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.notes-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.notes-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.note-tab{padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s;}
+.note-tab.active{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.3);color:#818cf8;}
+.notes-body{padding:16px 22px;}
+textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;font-weight:300;line-height:1.7;resize:vertical;min-height:120px;outline:none;transition:border-color .2s;}
+textarea:focus{border-color:var(--border2);}
+textarea::placeholder{color:var(--muted);}
+.notes-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px;}
+.save-btn{padding:8px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .2s;}
+.save-btn:hover{opacity:.85;}
+.save-note{font-size:11px;color:var(--break);display:none;}
+.char-count{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+
+/* HISTORY */
+.history-section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:16px;}
+.history-title{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.history-list{display:flex;flex-direction:column;gap:8px;}
+.history-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.history-week{font-size:12px;font-weight:500;}
+.history-streak{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);}
+.history-empty{font-size:13px;color:var(--muted);text-align:center;padding:12px 0;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.streak-section{animation:fadeUp .4s .05s ease both;}
+.water-section{animation:fadeUp .4s .08s ease both;}
+.phase-section{animation:fadeUp .4s .11s ease both;}
+.timetable{animation:fadeUp .4s .14s ease both;}
+.notes-section{animation:fadeUp .4s .17s ease both;}
+.history-section{animation:fadeUp .4s .2s ease both;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>🌱 <span class="name">Taku's</span> Growth OS</h1>
+    <div class="sub">NLP/LLM Engineer Path · Academic · Health · Spiritual</div>
+  </div>
+  <div class="week-badge">
+    <div class="week-label">Current Week</div>
+    <div class="week-val" id="week-label">Week —</div>
+  </div>
+</div>
+
+<!-- STREAK -->
+<div class="streak-section">
+  <div class="streak-top">
+    <div class="streak-title">🔥 Weekly Streak <span class="streak-count" id="streak-count">0</span> / 7 days</div>
+    <div style="font-size:11px;color:var(--muted)">Tap a day to mark complete</div>
+  </div>
+  <div class="streak-days" id="streak-days"></div>
+  <div class="streak-reset-note">⟳ Resets every Sunday at midnight · Previous weeks saved in History</div>
+</div>
+
+<!-- WATER TRACKER -->
+<div class="water-section">
+  <div class="water-top">
+    <div class="water-title">💧 Water Today <span class="water-ml" id="water-ml">0 ml / 2000 ml</span></div>
+    <div style="font-size:11px;color:var(--muted)">Tap each glass to log it · 8 × 250ml = 2L</div>
+  </div>
+  <div class="water-cups" id="water-cups"></div>
+  <div class="water-bar"><div class="water-bar-fill" id="water-bar-fill"></div></div>
+</div>
+
+<!-- NLP/LLM PHASE ROADMAP -->
+<div class="phase-section">
+  <div class="phase-section-title">🧠 NLP/LLM Engineer Roadmap — Your Path</div>
+  <div class="phases-grid">
+    <div class="phase-card ph1" onclick="togglePhase(this,1)">
+      <div class="phase-num">Phase 01</div>
+      <div class="phase-name">Python Foundations</div>
+      <div class="phase-dur">Months 1–2</div>
+      <div class="phase-focus">Variables, OOP, NumPy, Pandas, string handling</div>
+      <div class="phase-check" id="pc1">○</div>
+    </div>
+    <div class="phase-card ph2" onclick="togglePhase(this,2)">
+      <div class="phase-num">Phase 02</div>
+      <div class="phase-name">Maths for ML</div>
+      <div class="phase-dur">Months 2–4</div>
+      <div class="phase-focus">Linear algebra, calculus, gradient descent, softmax</div>
+      <div class="phase-check" id="pc2">○</div>
+    </div>
+    <div class="phase-card ph3" onclick="togglePhase(this,3)">
+      <div class="phase-num">Phase 03</div>
+      <div class="phase-name">Classical NLP</div>
+      <div class="phase-dur">Months 4–7</div>
+      <div class="phase-focus">Tokenisation, TF-IDF, Word2Vec, spaCy, NLTK</div>
+      <div class="phase-check" id="pc3">○</div>
+    </div>
+    <div class="phase-card ph4" onclick="togglePhase(this,4)">
+      <div class="phase-num">Phase 04</div>
+      <div class="phase-name">Deep Learning</div>
+      <div class="phase-dur">Months 7–12</div>
+      <div class="phase-focus">PyTorch, RNNs, Attention, Transformers, BERT, GPT</div>
+      <div class="phase-check" id="pc4">○</div>
+    </div>
+    <div class="phase-card ph5" onclick="togglePhase(this,5)">
+      <div class="phase-num">Phase 05</div>
+      <div class="phase-name">LLM Engineering</div>
+      <div class="phase-dur">Months 12–18</div>
+      <div class="phase-focus">HuggingFace, LoRA, RLHF, RAG, fine-tuning</div>
+      <div class="phase-check" id="pc5">○</div>
+    </div>
+    <div class="phase-card ph6" onclick="togglePhase(this,6)">
+      <div class="phase-num">Phase 06</div>
+      <div class="phase-name">Portfolio & Jobs 🚀</div>
+      <div class="phase-dur">Months 18–20+</div>
+      <div class="phase-focus">Deploy models, GitHub portfolio, interview prep</div>
+      <div class="phase-check" id="pc6">○</div>
+    </div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--exercise)"></div>Exercise</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--learn)"></div>Deep Learning</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--assign)"></div>Assignments</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--skill)"></div>Skill Building</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--meal)"></div>Meals</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--break)"></div>Break / Rest</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--spiritual)"></div>Spiritual</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--water)"></div>Hydration</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--sun)"></div>Sun / Health</div>
+</div>
+
+<!-- DAY SELECTOR -->
+<div class="day-selector" id="day-selector"></div>
+
+<!-- TIMETABLE -->
+<div class="timetable">
+  <div class="timetable-header">
+    <div>
+      <div class="timetable-title" id="tt-title">Today's Schedule</div>
+      <div class="timetable-sub" id="tt-sub">Tap blocks to mark them done</div>
+    </div>
+    <div class="done-counter" id="done-counter">0 / 0 done</div>
+  </div>
+  <div class="day-progress"><div class="day-progress-fill" id="day-progress-fill"></div></div>
+  <div id="blocks-container"></div>
+</div>
+
+<!-- NOTES -->
+<div class="notes-section">
+  <div class="notes-header">
+    <div class="notes-title">📝 Notes</div>
+    <div class="notes-tabs">
+      <div class="note-tab active" onclick="switchNote('daily',this)">Daily</div>
+      <div class="note-tab" onclick="switchNote('weekly',this)">Weekly</div>
+      <div class="note-tab" onclick="switchNote('goals',this)">Goals</div>
+      <div class="note-tab" onclick="switchNote('ideas',this)">Ideas</div>
+    </div>
+  </div>
+  <div class="notes-body">
+    <textarea id="note-area" rows="5" placeholder="Write today's reflections, wins, blockers, gratitude..."></textarea>
+    <div class="notes-footer">
+      <div class="char-count" id="char-count">0 chars</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="save-note" id="save-note">✓ Saved</span>
+        <button class="save-btn" onclick="saveNote()">Save Note</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="history-section">
+  <div class="history-title">📚 Previous Weeks</div>
+  <div class="history-list" id="history-list">
+    <div class="history-empty">No previous weeks yet — history appears here after each Sunday reset.</div>
+  </div>
+</div>
+
+</div><!-- end wrap -->
+
+<script>
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function isLectureDay(d, w) {
+  return (w%2===1) ? (d===2||d===4) : (d===1||d===3||d===5);
+}
+
+// ── SCHEDULE BLOCKS ─────────────────────────────────────────────────
+
+function getBlocks(dayIdx, weekNum) {
+  const isSunday = dayIdx === 0;
+  const lecture = isLectureDay(dayIdx, weekNum);
+
+  if (isSunday) return [
+    {time:'08:00 AM', title:'Church ⛪', detail:'Morning service & fellowship', color:'var(--spiritual)', tag:'Spiritual'},
+    {time:'1:00 PM',  title:'Lunch 🥘', detail:'Eat well · Water', color:'var(--meal)', tag:'Meal'},
+    {time:'2:00–5:00 PM', title:'Rest & Weekly Planning', detail:'Review the week, set intentions for next week, decompress', color:'var(--break)', tag:'Rest'},
+    {time:'5:30 PM',  title:'Supper 🍽️', detail:'Evening meal · Hydrate', color:'var(--meal)', tag:'Meal'},
+    {time:'6:30–7:30 PM', title:'Light Study / Revision', detail:'Lightly review the week\'s key material', color:'var(--learn)', tag:'Study'},
+    {time:'7:30–8:00 PM', title:'Planning + Light Learning', detail:'Set intentions for the week ahead', color:'var(--planning)', tag:'Planning'},
+    {time:'8:00–8:20 PM', title:'Typing Practice ⌨️', detail:'Speed & accuracy drills', color:'var(--skill)', tag:'Skill'},
+    {time:'8:20–8:45 PM', title:'Evening Exercise', detail:'Gentle wind-down movement', color:'var(--exercise)', tag:'Exercise'},
+    {time:'9:00–10:00 PM', title:'No-Screens Wind-Down 🙏', detail:'Bible reading · Journal · Prayer · Quiet prep · Water', color:'var(--spiritual)', tag:'Spiritual', subs:['📖 Bible Reading & Reflection','✍️ Journal / Gratitude','🙏 Prayer & Quiet Prep','💧 Final Water']},
+    {time:'10:00 PM', title:'Sleep 😴', detail:'Protect your 6.5h. Rest is part of the grind.', color:'var(--sleep)', tag:'Sleep'},
+  ];
+
+  const blocks = [
+    // MORNING ROUTINE — individual checkboxes
+    {time:'4:40–4:50 AM', title:'Morning Exercise 💪', detail:'10 min movement to activate the body', color:'var(--exercise)', tag:'Exercise'},
+    {time:'4:50–5:00 AM', title:'Shower 🚿', detail:'Cold or warm — wake up fully', color:'var(--break)', tag:'Routine'},
+    {time:'5:00–5:10 AM', title:'Get Dressed 👕', detail:'Clothes on, ready to win', color:'var(--break)', tag:'Routine'},
+    {time:'5:10–5:20 AM', title:'Make Bed + Tidy Up 🛏️', detail:'Discipline starts with your space', color:'var(--break)', tag:'Routine'},
+    // SUN EXPOSURE
+    {time:'5:20–5:25 AM', title:'☀️ Morning Sun Exposure', detail:'Step outside for 5 mins of natural light — resets circadian rhythm, boosts focus & mood for the day', color:'var(--sun)', tag:'Health'},
+    // DEEP LEARNING BLOCK
+    {time:'5:25–6:30 AM', title:'Deep Learning Block 🧠', detail:'Python / NLP / AI — most cognitively demanding block of the day. No distractions.', color:'var(--learn)', tag:'Deep Learn'},
+    // TEA
+    {time:'6:30 AM', title:'☕ Cup of Tea', detail:'Brew your tea. Small reward for an early start.', color:'var(--meal)', tag:'Fuel', subs:['☕ Tea made & ready']},
+    // ASSIGNMENT BLOCK
+    {time:'6:30–7:00 AM', title:'Assignment Block 📚', detail:'Lecture prep or urgent academic tasks', color:'var(--assign)', tag:'Academic'},
+  ];
+
+  if (lecture) {
+    blocks.push({time:'7:00–9:00 AM', title:'Lectures 🎓', detail:'Attend lectures — be fully present, take notes by hand', color:'var(--assign)', tag:'Lectures'});
+  } else {
+    blocks.push({time:'7:00–9:00 AM', title:'Skill Practice (No Lecture)', detail:'Python / Web Dev / AI — extended skill block on non-lecture days', color:'var(--skill)', tag:'Skill Build'});
+  }
+
+  blocks.push(
+    // SNACK / MEAL CHECKPOINT
+    {time:'8:00 AM', title:'🍌 Snack / Light Meal Checkpoint', detail:'If dining hall is open — eat something. Even fruit or a biscuit. Your brain needs fuel.', color:'var(--meal)', tag:'Fuel', subs:['🍽️ Ate something']},
+    {time:'9:00–9:30 AM', title:'Lecture Review / Study', detail:'Consolidate what you just learned — review notes while fresh', color:'var(--assign)', tag:'Review'},
+    {time:'9:30–11:30 AM', title:'Skill Building Block ⚡', detail:'NLP / Python / AI tools — focused, no phone, no social media', color:'var(--skill)', tag:'Skill Build'},
+    {time:'11:30–12:00 PM', title:'Break / Walk 🚶', detail:'Step away from screens. Sunlight. Movement. Breathe.', color:'var(--break)', tag:'Break'},
+    {time:'12:00–1:00 PM', title:'Practical Practice 🛠️', detail:'Build things — projects, exercises, coding challenges · Water', color:'var(--skill)', tag:'Projects'},
+    {time:'1:00 PM', title:'Lunch 🥘', detail:'Full meal. Sit down. Eat slowly. Hydrate.', color:'var(--meal)', tag:'Meal', subs:['🥘 Had lunch']},
+    {time:'1:00–4:00 PM', title:'Assignments / Projects / Business', detail:'Academic work, portfolio projects, business reading · Water', color:'var(--assign)', tag:'Academic'},
+    {time:'4:00–5:00 PM', title:'Free Time / Rest 😌', detail:'Your time. No guilt. Decompress. Walk. Listen to music.', color:'var(--free)', tag:'Free'},
+    {time:'5:30 PM', title:'Supper 🍽️', detail:'Eat well. Hydrate. Transition to evening mode.', color:'var(--meal)', tag:'Meal', subs:['🍽️ Had supper']},
+    {time:'5:30–7:30 PM', title:'Light Study / Revision', detail:'Revisit today\'s material lightly. No heavy new content.', color:'var(--learn)', tag:'Study'},
+    {time:'7:30–8:00 PM', title:'Planning + Light Learning', detail:'Plan tomorrow, set intentions, Water', color:'var(--planning)', tag:'Planning'},
+    {time:'8:00–8:20 PM', title:'Typing Practice ⌨️', detail:'Speed & accuracy — consistency compounds over months', color:'var(--skill)', tag:'Skill'},
+    {time:'8:20–9:00 PM', title:'Evening Exercise', detail:'Gentle movement to wind down the nervous system', color:'var(--exercise)', tag:'Exercise'},
+    // COMBINED NO-SCREENS BLOCK
+    {time:'9:00–10:00 PM', title:'No-Screens Wind-Down 🙏', detail:'Screens off. This hour is sacred — protect it.', color:'var(--spiritual)', tag:'Spiritual', subs:['📖 Bible Reading & Reflection','✍️ Journal / Gratitude','🙏 Prayer & Quiet Prep','💧 Final Water (goal: 2L–2.5L)']},
+    {time:'10:00 PM', title:'Sleep 😴', detail:'6.5h of sleep. Recovery is part of performance.', color:'var(--sleep)', tag:'Sleep'},
+  );
+
+  return blocks;
+}
+
+// ── STATE ────────────────────────────────────────────────────────────
+
+function getWeekKey() {
+  const now = new Date();
+  const mon = new Date(now);
+  mon.setDate(now.getDate() - ((now.getDay()+6)%7));
+  return `week_${mon.getFullYear()}_${mon.getMonth()+1}_${mon.getDate()}`;
+}
+
+function getWeekNum() {
+  const start = new Date('2025-01-06');
+  return Math.floor((new Date()-start)/(7*86400000))+1;
+}
+
+function loadState() { try{ const r=localStorage.getItem('taku_state2'); return r?JSON.parse(r):{}; }catch(e){return{};} }
+function saveState(s) { try{ localStorage.setItem('taku_state2',JSON.stringify(s)); }catch(e){} }
+
+let state = loadState();
+const weekKey = getWeekKey();
+const weekNum = getWeekNum();
+
+if (!state[weekKey]) state[weekKey] = {streak:[false,false,false,false,false,false,false],blocks:{},notes:{daily:'',weekly:'',goals:'',ideas:''},water:[false,false,false,false,false,false,false,false],subs:{}};
+if (!state.phases) state.phases = [false,false,false,false,false,false];
+
+// archive old weeks
+Object.keys(state).filter(k=>k.startsWith('week_')&&k!==weekKey).sort().reverse().slice(8).forEach(k=>delete state[k]);
+
+document.getElementById('week-label').textContent = 'Week '+weekNum;
+
+// ── STREAK ───────────────────────────────────────────────────────────
+
+const today = new Date().getDay();
+
+function renderStreak() {
+  const c = document.getElementById('streak-days'); c.innerHTML='';
+  let count=0;
+  DAYS.forEach((d,i)=>{
+    const done=state[weekKey].streak[i];
+    if(done)count++;
+    const dot=document.createElement('div');
+    dot.className='day-dot'+(done?' completed':'')+(i===today?' today':'');
+    dot.innerHTML=`<div class="day-circle">${done?'✓':(i===today?'→':d[0])}</div><div class="day-name">${d}</div>`;
+    dot.onclick=()=>{state[weekKey].streak[i]=!state[weekKey].streak[i];renderStreak();};
+    c.appendChild(dot);
+  });
+  document.getElementById('streak-count').textContent=count;
+  saveState(state);
+}
+renderStreak();
+
+// ── WATER ────────────────────────────────────────────────────────────
+
+function renderWater() {
+  const c = document.getElementById('water-cups'); c.innerHTML='';
+  const cups = state[weekKey].water || Array(8).fill(false);
+  const filled = cups.filter(Boolean).length;
+  const ml = filled*250;
+  document.getElementById('water-ml').textContent = `${ml} ml / 2000 ml`;
+  document.getElementById('water-bar-fill').style.width = Math.min(100,(ml/2000)*100)+'%';
+  cups.forEach((f,i)=>{
+    const wrap=document.createElement('div'); wrap.className='water-cup-wrap';
+    const cup=document.createElement('div'); cup.className='water-cup'+(f?' filled':'');
+    cup.textContent=f?'💧':'○';
+    cup.onclick=()=>{state[weekKey].water[i]=!state[weekKey].water[i];saveState(state);renderWater();};
+    const lbl=document.createElement('div'); lbl.className='water-cup-label'; lbl.textContent=(i+1)+'×250';
+    wrap.appendChild(cup); wrap.appendChild(lbl); c.appendChild(wrap);
+  });
+}
+renderWater();
+
+// ── PHASES ───────────────────────────────────────────────────────────
+
+function renderPhases() {
+  state.phases.forEach((done,i)=>{
+    const el=document.getElementById('pc'+(i+1));
+    if(el) el.textContent=done?'✅':'○';
+  });
+}
+
+function togglePhase(card,num) {
+  state.phases[num-1]=!state.phases[num-1];
+  renderPhases(); saveState(state);
+}
+renderPhases();
+
+// ── DAY SELECTOR ─────────────────────────────────────────────────────
+
+let selectedDay = today;
+
+function renderDaySelector() {
+  const c=document.getElementById('day-selector'); c.innerHTML='';
+  DAYS.forEach((d,i)=>{
+    const btn=document.createElement('button');
+    btn.className='ds-btn'+(i===selectedDay?' active':'');
+    btn.textContent=d;
+    btn.onclick=()=>{selectedDay=i;renderDaySelector();renderBlocks();};
+    c.appendChild(btn);
+  });
+}
+renderDaySelector();
+
+// ── BLOCKS ───────────────────────────────────────────────────────────
+
+function bKey(d,i){return`${weekKey}_d${d}_b${i}`;}
+function sKey(d,bi,si){return`${weekKey}_d${d}_b${bi}_s${si}`;}
+
+function renderBlocks() {
+  const d=selectedDay;
+  const blocks=getBlocks(d,weekNum);
+  const c=document.getElementById('blocks-container'); c.innerHTML='';
+  const lecture=isLectureDay(d,weekNum);
+  document.getElementById('tt-title').textContent=DAY_FULL[d]+"'s Schedule";
+  document.getElementById('tt-sub').textContent=d===0?'Sunday — Rest, Church & Planning':(lecture?'Lecture day · Stay focused':'Non-lecture day · Full skill mode');
+
+  let doneCount=0;
+  blocks.forEach((b,i)=>{
+    const key=bKey(d,i);
+    const isDone=state[weekKey].blocks[key]||false;
+    if(isDone)doneCount++;
+
+    const div=document.createElement('div');
+    div.className='block'+(isDone?' checked':'');
+
+    let subsHTML='';
+    if(b.subs&&b.subs.length){
+      subsHTML='<div class="sub-checks">';
+      b.subs.forEach((s,si)=>{
+        const sk=sKey(d,i,si);
+        const sd=state[weekKey].subs&&state[weekKey].subs[sk];
+        subsHTML+=`<div class="sub-check${sd?' done':''}" data-sk="${sk}">${s}</div>`;
+      });
+      subsHTML+='</div>';
+    }
+
+    div.innerHTML=`
+      <div class="block-check"></div>
+      <div class="block-color" style="background:${b.color}"></div>
+      <div class="block-content">
+        <div class="block-time">${b.time}</div>
+        <div class="block-title">${b.title}</div>
+        ${b.detail?`<div class="block-detail">${b.detail}</div>`:''}
+        <span class="block-tag" style="background:${b.color}22;color:${b.color}">${b.tag}</span>
+        ${subsHTML}
+      </div>`;
+
+    // Main block click
+    div.querySelector('.block-check').addEventListener('click',e=>{
+      e.stopPropagation();
+      state[weekKey].blocks[key]=!state[weekKey].blocks[key];
+      saveState(state); renderBlocks();
+    });
+
+    // Sub-check clicks
+    div.querySelectorAll('.sub-check').forEach(sc=>{
+      sc.addEventListener('click',e=>{
+        e.stopPropagation();
+        const sk=sc.dataset.sk;
+        if(!state[weekKey].subs)state[weekKey].subs={};
+        state[weekKey].subs[sk]=!state[weekKey].subs[sk];
+        saveState(state); renderBlocks();
+      });
+    });
+
+    c.appendChild(div);
+  });
+
+  document.getElementById('done-counter').textContent=`${doneCount} / ${blocks.length} done`;
+  document.getElementById('day-progress-fill').style.width=blocks.length?(doneCount/blocks.length*100)+'%':'0%';
+}
+renderBlocks();
+
+// ── NOTES ────────────────────────────────────────────────────────────
+
+let currentNoteType='daily';
+
+function switchNote(type,tab){
+  saveCurrentNote();currentNoteType=type;
+  document.querySelectorAll('.note-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');loadNote();
+}
+
+function loadNote(){
+  const notes=state[weekKey].notes||{};
+  const area=document.getElementById('note-area');
+  area.value=notes[currentNoteType]||'';
+  area.placeholder={
+    daily:"Write today's reflections, wins, blockers, gratitude...",
+    weekly:"Weekly review — what worked? what didn't? what to improve next week?",
+    goals:"Current goals — NLP roadmap phase, academic targets, income, health...",
+    ideas:"Ideas for projects, chatbots, freelance, anything on your mind..."
+  }[currentNoteType];
+  updateCharCount();
+}
+
+function saveCurrentNote(){
+  if(!state[weekKey].notes)state[weekKey].notes={};
+  state[weekKey].notes[currentNoteType]=document.getElementById('note-area').value;
+  saveState(state);
+}
+
+function saveNote(){
+  saveCurrentNote();
+  const el=document.getElementById('save-note');
+  el.style.display='inline';
+  setTimeout(()=>el.style.display='none',2000);
+}
+
+function updateCharCount(){
+  document.getElementById('char-count').textContent=document.getElementById('note-area').value.length+' chars';
+}
+
+document.getElementById('note-area').addEventListener('input',updateCharCount);
+document.getElementById('note-area').addEventListener('blur',saveCurrentNote);
+loadNote();
+
+// ── HISTORY ──────────────────────────────────────────────────────────
+
+function renderHistory(){
+  const c=document.getElementById('history-list');
+  const keys=Object.keys(state).filter(k=>k.startsWith('week_')&&k!==weekKey).sort().reverse();
+  if(!keys.length){c.innerHTML='<div class="history-empty">No previous weeks yet — your history will appear here after each Sunday reset.</div>';return;}
+  c.innerHTML='';
+  keys.slice(0,8).forEach(k=>{
+    const w=state[k];
+    const streak=w.streak?w.streak.filter(Boolean).length:0;
+    const parts=k.replace('week_','').split('_');
+    const label=parts.length===3?`Week of ${parts[1]}/${parts[2]}/${parts[0]}`:k;
+    const div=document.createElement('div'); div.className='history-item';
+    div.innerHTML=`<div class="history-week">📅 ${label}</div><div class="history-streak">🔥 ${streak}/7 days</div>`;
+    c.appendChild(div);
+  });
+}
+renderHistory();
+
+// ── CLOCK ────────────────────────────────────────────────────────────
+
+const wb=document.querySelector('.week-badge');
+const cd=document.createElement('div');
+cd.style.cssText='margin-top:8px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--dim);text-align:center;';
+cd.innerHTML='<span id="live-clock">--:--:--</span>';
+wb.appendChild(cd);
+
+function updateClock(){
+  const n=new Date();
+  document.getElementById('live-clock').textContent=
+    [n.getHours(),n.getMinutes(),n.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':');
+}
+setInterval(updateClock,1000); updateClock();
+
+saveState(state);
+</script>
+</body>
+</html>
